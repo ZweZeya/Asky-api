@@ -70,7 +70,7 @@ passport.deserializeUser((id, cb) => {
 })
 
 // Register route
-app.post("/register", (req, res) => {
+app.post('/register', (req, res) => {
     const username = req.body.username;
     if (req.body.password != req.body.confirmPassword) {
         res.send("Passwords do not match");
@@ -252,12 +252,31 @@ app.route('/friends')
         }  
     })
 
-    app.route('/friends/posts')
-        .post((req, res) => {
-            User.findOne({ username: req.body.username }, (err, user) => {
-                res.send(user.posts)
-            })
+app.route('/friends/posts')
+    .post((req, res) => {
+        User.findOne({ username: req.body.username }, (err, user) => {
+            res.send(user.posts)
         })
+    })   
+    
+app.route('/reply')
+    .post((req, res) => {
+        User.findOne({ username: req.body.username }, (err, user) => {
+            if (err) throw err;
+            if (user) {
+                user.posts.forEach(post => {
+                    if (post.id === req.body.postId) {
+                        post.replies.push({
+                            content: req.body.reply,
+                            author: req.user.username
+                        })
+                    }
+                });
+                user.save();
+                res.send("success");
+            }
+        })
+    })
 
 app.listen(port, () => {
     console.log(`Server has started on port ${port}`);

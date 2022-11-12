@@ -57,7 +57,6 @@ const userSchema = new mongoose.Schema({
     },
     friends: [String],
     posts: [postSchema],
-    replies: [replySchema]
 });
 
 module.exports = mongoose.model("User", userSchema);
